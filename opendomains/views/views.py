@@ -10,9 +10,8 @@ def index():
     return render_template("index.html")
 
 @app.route('/<path:url_path>')
-def download_file(url_path):
+def content(url_path):
     length = len(url_path) - 1
-
 
     file_name = ''
     path = ''
@@ -24,8 +23,9 @@ def download_file(url_path):
             break
     path = url_path.replace(file_name, '')
 
-    abs_path = os.path.dirname(os.path.abspath(__file__)).replace('/views', '')
+    abs_path = os.path.dirname(os.path.abspath(__file__))
+    od_path = abs_path.replace('/' + os.path.basename(abs_path), '')
 
-    pp = abs_path + '/templates/' + path
-    response = send_from_directory(pp, file_name, as_attachment=True)
+    path_with_file = od_path + '/templates/' + path
+    response = send_from_directory(path_with_file, file_name, as_attachment=True)
     return response
