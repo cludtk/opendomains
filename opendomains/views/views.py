@@ -9,11 +9,19 @@ from opendomains import app
 def index():
     return render_template("index.html")
 
-@app.route('/<path:path>/<file>')
-def dynamic_files(path, file):
+def get_abs_path():
     abs_path = os.path.dirname(os.path.abspath(__file__))
-    od_path = abs_path.replace('/' + os.path.basename(abs_path), '')
-    path_with_file = od_path + '/templates/' + path
+    current_folder = '/' + os.path.basename(abs_path)
+    abs_path = abs_path[0:] + abs_path[:len(abs_path)-len(current_folder)]
+    return abs_path + '/templates/'
 
-    response = send_from_directory(path_with_file, file, as_attachment=True)
+@app.route('/<path:path>/<file>')
+def get_file_in_folder(path, file):
+    path_to_file = get_abs_path() + path
+    response = send_from_directory(path_to_file, file, as_attachment=True)
+    return response
+
+@app.route('/<file>')
+def get_file(file):
+    response = send_from_directory(get_abs_path(), file, as_attachment=True)
     return response
